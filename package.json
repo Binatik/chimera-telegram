@@ -1,0 +1,29 @@
+{
+	"name": "chimera-telegram",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon",
+		"build": "tsc -p .",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Binatik/chimera-telegram.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Binatik/chimera-telegram/issues"
+	},
+	"homepage": "https://github.com/Binatik/chimera-telegram#readme",
+	"devDependencies": {
+		"nodemon": "^2.0.22",
+		"ts-node": "^10.9.1"
+	},
+	"dependencies": {
+		"dotenv": "^16.1.4",
+		"grammy": "^1.16.1"
+	}
+}
