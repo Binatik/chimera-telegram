@@ -3,7 +3,7 @@ import { Bot } from 'grammy'
 import { Server } from 'http'
 import { MemberConroller } from '../member/controller/member.controller'
 import { ConfigService } from '../config/service/config.service'
-import { IContextBot } from './bot.context.interface'
+import { IContextBot } from './app.context.interface'
 
 function getInstancesApp() {
 	return {
