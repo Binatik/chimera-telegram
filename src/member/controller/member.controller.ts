@@ -1,9 +1,23 @@
 import { Request, Response, NextFunction } from 'express'
 import { RouteController } from '../../route/route.controller'
+import { MemberService } from '../service/member.service'
+import { MemberDto } from '../dto/member.dto'
+import { HTTPError } from '../../errors/exeption.filter'
+
+export function getInstancesController() {
+	return {
+		memberService: new MemberService(),
+	}
+}
+
+export type IInstancesController = ReturnType<typeof getInstancesController>
 
 export class MemberConroller extends RouteController {
+	private instancesController: IInstancesController
+
 	constructor() {
 		super()
+		this.instancesController = getInstancesController()
 		this.bindRoutes([
 			{
 				path: '/',
@@ -32,9 +46,14 @@ export class MemberConroller extends RouteController {
 		])
 	}
 
-	create(req: Request, res: Response, next: NextFunction) {
-		res.send('create')
-		console.log('create')
+	async create(req: Request<{}, {}, MemberDto>, res: Response, next: NextFunction) {
+		console.log(this)
+		const member = await this.instancesController.memberService.createMember(req.body)
+
+		if (!member) {
+			return next(new HTTPError(404, 'Пользователь не найден'))
+		}
+		this.ok(res, member)
 	}
 
 	update(req: Request, res: Response, next: NextFunction) {
