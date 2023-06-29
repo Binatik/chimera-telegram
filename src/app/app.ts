@@ -2,37 +2,24 @@ import express, { Express } from 'express'
 import { Bot } from 'grammy'
 import { Server } from 'http'
 import { MemberConroller } from '../member/controller/member.controller'
-import { ConfigService } from '../config/service/config.service'
 import { IContextBot } from './app.context.interface'
-import { json } from 'body-parser'
-import { ExeptionFilter } from '../errors/exeption.filter'
-
-function getInstancesApp() {
-	return {
-		memberConroller: new MemberConroller(),
-		configService: new ConfigService(),
-		exeptionFilter: new ExeptionFilter(),
-	}
-}
-
-type IInstances = ReturnType<typeof getInstancesApp>
+import { IInstances, getInstancesApp } from './Instances'
 
 class App {
-	instances: IInstances
 	app: Express
 	server: Server
 	port: '8000' | '3000'
 	chimera: Bot<IContextBot>
 	memberConroller: MemberConroller
 
-	constructor(instances: IInstances) {
-		this.instances = instances
+	constructor(private instancesApp: IInstances) {
+		this.instancesApp = instancesApp
 		this.app = express()
 		this.port = '3000'
 	}
 
 	useExeptionFilters() {
-		this.app.use(this.instances.exeptionFilter.catch.bind(this.instances.exeptionFilter))
+		this.app.use(this.instancesApp.exeptionFilter.catch.bind(this.instancesApp.exeptionFilter))
 	}
 
 	useMiddleware() {
@@ -40,12 +27,12 @@ class App {
 	}
 
 	useBot() {
-		this.chimera = new Bot<IContextBot>(this.instances.configService.get('TOKEN'))
+		this.chimera = new Bot<IContextBot>(this.instancesApp.configService.get('TOKEN'))
 		this.chimera.start()
 	}
 
 	useRouter() {
-		this.app.use('/member', this.instances.memberConroller.router)
+		this.app.use('/member', this.instancesApp.memberConroller.router)
 	}
 
 	public async run() {
@@ -53,6 +40,7 @@ class App {
 		this.useMiddleware()
 		this.useRouter()
 		this.useExeptionFilters()
+		await this.instancesApp.databaseService.connect()
 		this.app.listen(this.port, () =>
 			console.log(`Сервер запущен на http://localhost:${this.port}/member`)
 		)

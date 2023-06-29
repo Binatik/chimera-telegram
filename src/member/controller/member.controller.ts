@@ -1,23 +1,13 @@
 import { Request, Response, NextFunction } from 'express'
 import { RouteController } from '../../route/route.controller'
-import { MemberService } from '../service/member.service'
 import { MemberDto } from '../dto/member.dto'
 import { HTTPError } from '../../errors/exeption.filter'
-
-export function getInstancesController() {
-	return {
-		memberService: new MemberService(),
-	}
-}
-
-export type IInstancesController = ReturnType<typeof getInstancesController>
+import { IInstancesController } from '../../app/Instances'
 
 export class MemberConroller extends RouteController {
-	private instancesController: IInstancesController
-
-	constructor() {
+	constructor(private instancesController: IInstancesController) {
 		super()
-		this.instancesController = getInstancesController()
+		this.instancesController = instancesController
 		this.bindRoutes([
 			{
 				path: '/',
@@ -47,7 +37,6 @@ export class MemberConroller extends RouteController {
 	}
 
 	async create(req: Request<{}, {}, MemberDto>, res: Response, next: NextFunction) {
-		console.log(this)
 		const member = await this.instancesController.memberService.createMember(req.body)
 
 		if (!member) {
